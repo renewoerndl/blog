@@ -54,6 +54,12 @@
             <artifactId>postgresql</artifactId>
             <version>${postgresql.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-test-autoconfigure</artifactId>
+            <version>3.4.2</version>
+            <scope>test</scope>
+        </dependency>
         <!-- JUnit 5 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -106,6 +112,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M7</version>
                 <configuration>
+                    <includes>
+                        <include>**/*Test.java</include>
+                    </includes>
                     <useModulePath>false</useModulePath>
                 </configuration>
             </plugin>

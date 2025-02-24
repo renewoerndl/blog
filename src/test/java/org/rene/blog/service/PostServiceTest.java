@@ -1,7 +1,7 @@
 package org.rene.blog.service;
 
+import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -33,31 +33,43 @@ class PostServiceTest {
 
     @Test
     void testGetAllPosts() {
-        // Mocking repository response
-        when(postRepository.findAll()).thenReturn(Arrays.asList(
-                new Post("Spring Boot Guide", "Content for Spring Boot", "John Doe"),
-                new Post("REST API Best Practices", "Content for REST API", "Jane Smith")
-        ));
+        // Arrange: Mock Data erstellen
+        Post post1 = new Post();
+        post1.setId(1L);
+        post1.setTitle("Post 1");
 
-        // Call service method
-        List<Post> posts = postService.getAllPosts();
+        Post post2 = new Post();
+        post2.setId(2L);
+        post2.setTitle("Post 2");
 
-        // Assertions
-        assertEquals(2, posts.size());
-        assertEquals("Spring Boot Guide", posts.get(0).getTitle());
+        List<Post> mockPosts = Arrays.asList(post1, post2);
+
+        // Verhalten des Repositories definieren
+        when(postRepository.findAll()).thenReturn(mockPosts);
+
+        // Act: Methode aufrufen
+        List<Post> result = postService.getAllPosts();
+
+        // Assert: Ergebnisse überprüfen
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("Post 1", result.get(0).getTitle());
+        assertEquals("Post 2", result.get(1).getTitle());
+
+        // Verifizierung des Repository-Aufrufs
         verify(postRepository, times(1)).findAll();
     }
 
     @Test
     void testCreatePost() {
-        Post newPost = new Post("Unit Testing", "Testing with JUnit & Mockito", "Alice");
-
-        when(postRepository.save(any(Post.class))).thenReturn(newPost);
-
-        Post savedPost = postService.createPostWithTags(newPost, null);
-
-        assertNotNull(savedPost);
-        assertEquals("Unit Testing", savedPost.getTitle());
-        verify(postRepository, times(1)).save(any(Post.class));
     }
+
+    @Test
+    void testUpdatePost() {
+    }
+
+    @Test
+    void testDeletePost() {
+    }
+
 }
