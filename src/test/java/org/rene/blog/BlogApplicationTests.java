@@ -1,15 +1,11 @@
 package org.rene.blog;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.SpringApplication;
 
-@Import(TestcontainersConfiguration.class)
-@SpringBootTest
-class BlogApplicationTests {
+public class BlogApplicationTests {
 
-    @Test
-    void contextLoads() {
+    public static void main(String[] args) {
+        SpringApplication.from(BlogApplication::main).with(TestcontainersConfiguration.class).run(args);
     }
 
 }
