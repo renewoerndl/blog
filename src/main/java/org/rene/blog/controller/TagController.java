@@ -1,8 +1,9 @@
 package org.rene.blog.controller;
 
-import org.rene.blog.model.Tag;
+import org.rene.blog.dto.TagDTO;
 import org.rene.blog.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,34 +17,39 @@ import java.util.List;
 @RequestMapping("/api/tags")
 public class TagController {
 
+    private final TagService tagService;
+
     /**
-     * Service instance for handling operations related to tags.
-     * Provides access to methods for retrieving, creating, and managing tags
-     * through the {@link TagService}.
+     * Constructs a TagController with the specified TagService.
      *
-     * This variable is automatically injected by Spring's dependency injection mechanism.
+     * @param tagService the TagService instance to manage tag operations
      */
     @Autowired
-    private TagService tagService;
+    public TagController(TagService tagService) {
+        this.tagService = tagService;
+    }
 
     /**
      * Retrieves all tags available in the system.
      *
-     * @return a list of all Tag objects
+     * @return a list of all TagDTO objects
      */
     @GetMapping
-    public List<Tag> getAllTags() {
-        return tagService.getAllTags();
+    public ResponseEntity<List<TagDTO>> getAllTags() {
+        List<TagDTO> tags = tagService.getAllTags();
+        return ResponseEntity.ok(tags);
     }
 
     /**
-     * Creates a new tag based on the provided tag data.
+     * Creates a new tag based on the provided tag name.
+     * Ensures tags are unique.
      *
-     * @param tag the tag object to be created
-     * @return the created tag object
+     * @param tagDTO the tag object to be created
+     * @return the created TagDTO object
      */
     @PostMapping
-    public Tag createTag(@RequestBody Tag tag) {
-        return tagService.createTag(tag);
+    public ResponseEntity<TagDTO> createTag(@RequestBody TagDTO tagDTO) {
+        TagDTO createdTag = tagService.createTag(tagDTO);
+        return ResponseEntity.ok(createdTag);
     }
 }
