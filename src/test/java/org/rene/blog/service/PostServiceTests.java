@@ -12,13 +12,12 @@ import org.rene.blog.repository.PostRepository;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class) // Enables Mockito for JUnit 5
-class PostServiceTest {
+public class PostServiceTests {
 
     @Mock
     private PostRepository postRepository; // Mock repository

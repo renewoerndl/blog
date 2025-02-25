@@ -1,4 +1,4 @@
 package org.rene.blog.controller;
 
-public class TagControllerTest {
+public class TagControllerTests {
 }
