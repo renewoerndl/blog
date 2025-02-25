@@ -12,6 +12,7 @@ import java.util.Set;
  * It contains attributes associated with a blog post such as ID, title, content, and author.
  * Includes constructors, getters, setters, and a toString method for debugging purposes.
  */
+
 @Entity
 @Table(name = "posts")
 public class Post {
