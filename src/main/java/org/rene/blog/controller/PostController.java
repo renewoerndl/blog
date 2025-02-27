@@ -1,12 +1,13 @@
 package org.rene.blog.controller;
 
-import org.rene.blog.model.Post;
+import org.rene.blog.dto.PostDTO;
 import org.rene.blog.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -35,50 +36,66 @@ public class PostController {
     /**
      * Retrieves a list of all blog posts.
      *
-     * @return a list of all blog posts
+     * @return a list of all blog posts as DTOs
      */
     @GetMapping
-    public List<Post> getAllPosts() {
-        return  postService.getAllPosts();
+    public ResponseEntity<List<PostDTO>> getAllPosts() {
+        List<PostDTO> posts = postService.getAllPosts();
+        return ResponseEntity.ok(posts);
     }
 
     /**
      * Retrieves a post by its ID.
      *
      * @param id the ID of the post to retrieve
-     * @return a ResponseEntity containing the post if found, or a not found response if the post does not exist
+     * @return a ResponseEntity containing the post DTO if found, or a not found response if the post does not exist
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Post> getPost(@PathVariable Long id) {
-        return postService.getPostById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<PostDTO> getPost(@PathVariable Long id) {
+        PostDTO postDTO = postService.getPostById(id);
+        return ResponseEntity.ok(postDTO);
     }
+
 
     /**
      * Creates a new blog post with the specified tags.
      *
-     * @param post the blog post to create
-     * @param tags the set of tags to associate with the post
-     * @return a ResponseEntity containing the created blog post
+     * @param postDTO the blog post data transfer object
+     * @return a ResponseEntity containing the created blog post DTO
      */
     @PostMapping
-    public ResponseEntity<Post> createPost(@RequestBody Post post, @RequestParam Set<String> tags) {
-        Post createdPost = postService.createPostWithTags(post, tags);
+    public ResponseEntity<PostDTO> createPost(@RequestBody PostDTO postDTO) {
+        PostDTO createdPost = postService.createPost(postDTO);
+        return ResponseEntity.ok(createdPost);
+    }
+
+    /**
+     * Creates a new blog post with tags.
+     *
+     * @param postDTO the blog post DTO containing title, content, author
+     * @param tags    optional list of tags to associate with the post
+     * @return ResponseEntity with the created post DTO
+     */
+    @PostMapping("/with-tags")
+    public ResponseEntity<PostDTO> createPostWithTags(@RequestBody PostDTO postDTO,
+                                                      @RequestParam(required = false) Set<String> tags) {
+        PostDTO createdPost = postService.createPostWithTags(postDTO, tags);
         return ResponseEntity.ok(createdPost);
     }
 
     /**
      * Updates an existing blog post identified by its ID with the provided data.
      *
-     * @param id the ID of the blog post to update
-     * @param post the updated blog post details
-     * @return a ResponseEntity containing the updated blog post
+     * @param id      the ID of the blog post to update
+     * @param postDTO the updated blog post details
+     * @return a ResponseEntity containing the updated blog post DTO
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody Post post) {
-        return ResponseEntity.ok(postService.updatePost(id, post));
+    public ResponseEntity<PostDTO> updatePost(@PathVariable Long id, @RequestBody PostDTO postDTO) {
+        PostDTO updatedPost = postService.updatePost(id, postDTO);
+        return ResponseEntity.ok(updatedPost);
     }
+
 
     /**
      * Deletes a blog post identified by its ID.
@@ -91,7 +108,4 @@ public class PostController {
         postService.deletePost(id);
         return ResponseEntity.noContent().build();
     }
-
-
-
 }
