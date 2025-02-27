@@ -11,10 +11,16 @@ public class PostDTO {
     private String author;
     private Set<String> tags;
 
-    // ✅ Default constructor (needed for Jackson)
+    /**
+     * Default constructor (needed for Jackson).
+     */
     public PostDTO() {}
 
-    // ✅ Constructor to create PostDTO from a Post entity
+    /**
+     * Constructor to create PostDTO from a Post entity.
+     *
+     * @param post The Post entity to convert to a DTO.
+     */
     public PostDTO(Post post) {
         this.id = post.getId();
         this.title = post.getTitle();
@@ -23,7 +29,22 @@ public class PostDTO {
         this.tags = post.getTags().stream().map(tag -> tag.getName()).collect(Collectors.toSet());
     }
 
-    // ✅ Constructor to create PostDTO manually (for tests)
+    /**
+     * Constructor to create PostDTO manually (for tests).
+     *
+     * Parameters
+     * ----------
+     * id : Long
+     *     The ID of the post.
+     * title : String
+     *     The title of the post.
+     * content : String
+     *     The content of the post.
+     * author : String
+     *     The author of the post.
+     * tags : Set<String>
+     *     The tags associated with the post.
+     */
     public PostDTO(Long id, String title, String content, String author, Set<String> tags) {
         this.id = id;
         this.title = title;

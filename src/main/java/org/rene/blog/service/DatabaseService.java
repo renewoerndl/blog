@@ -10,10 +10,26 @@ public class DatabaseService {
 
     private final JdbcTemplate jdbcTemplate;
 
+    /**
+     * Constructor for DatabaseService.
+     *
+     * Parameters
+     * ----------
+     * dataSource : DataSource
+     *     The data source to be used by the JdbcTemplate.
+     */
     public DatabaseService(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    /**
+     * Tests the database connection.
+     *
+     * Returns
+     * -------
+     * String
+     *     A message indicating whether the connection was successful or not.
+     */
     public String testConnection() {
         try {
             String dbName = jdbcTemplate.queryForObject("SELECT current_database();", String.class);
