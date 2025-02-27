@@ -16,13 +16,32 @@ public class TagService {
     @Autowired
     private TagRepository tagRepository;
 
-    // Get all tags (returning DTOs)
+    /**
+     * Get all tags.
+     *
+     * Returns
+     * -------
+     * List<TagDTO>
+     *     A list of TagDTO objects representing all tags.
+     */
     public List<TagDTO> getAllTags() {
         List<Tag> tags = tagRepository.findAll();
         return tags.stream().map(TagDTO::new).collect(Collectors.toList());
     }
 
-    // Create a tag only if it doesn't exist
+    /**
+     * Create a tag only if it doesn't exist.
+     *
+     * Parameters
+     * ----------
+     * tagDTO : TagDTO
+     *     The TagDTO object containing the tag information.
+     *
+     * Returns
+     * -------
+     * TagDTO
+     *     The created or existing TagDTO object.
+     */
     public TagDTO createTag(TagDTO tagDTO) {
         Optional<Tag> existingTag = tagRepository.findByName(tagDTO.getName());
 

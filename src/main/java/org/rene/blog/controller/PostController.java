@@ -12,10 +12,6 @@ import java.util.Set;
 
 /**
  * REST controller for managing blog posts.
- * Provides endpoints for creating, retrieving, updating, and deleting blog posts.
- * Also includes functionality to associate posts with tags.
- *
- * Mapped to API endpoints under "/api/posts".
  */
 @RestController
 @RequestMapping("/api/posts")
@@ -56,9 +52,8 @@ public class PostController {
         return ResponseEntity.ok(postDTO);
     }
 
-
     /**
-     * Creates a new blog post with the specified tags.
+     * Creates a new blog post.
      *
      * @param postDTO the blog post data transfer object
      * @return a ResponseEntity containing the created blog post DTO
@@ -84,7 +79,7 @@ public class PostController {
     }
 
     /**
-     * Updates an existing blog post identified by its ID with the provided data.
+     * Updates an existing blog post identified by its ID.
      *
      * @param id      the ID of the blog post to update
      * @param postDTO the updated blog post details
@@ -95,7 +90,6 @@ public class PostController {
         PostDTO updatedPost = postService.updatePost(id, postDTO);
         return ResponseEntity.ok(updatedPost);
     }
-
 
     /**
      * Deletes a blog post identified by its ID.
