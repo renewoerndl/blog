@@ -1,74 +1,45 @@
 package org.rene.blog.service;
 
-import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.Test;
+import org.rene.blog.dto.PostDTO;
 import org.rene.blog.model.Post;
+import org.rene.blog.model.Tag;
 import org.rene.blog.repository.PostRepository;
+import org.rene.blog.repository.TagRepository;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class) // Enables Mockito for JUnit 5
+@SpringBootTest
 public class PostServiceTests {
 
-    @Mock
-    private PostRepository postRepository; // Mock repository
+    @MockBean
+    private PostRepository postRepository;
 
-    @InjectMocks
-    private PostService postService; // Inject mock into service
+    @MockBean
+    private TagRepository tagRepository;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
+    @MockBean
+    private PostService postService;
 
     @Test
-    void testGetAllPosts() {
-        // Arrange: Mock Data erstellen
-        Post post1 = new Post();
-        post1.setId(1L);
-        post1.setTitle("Post 1");
+    public void testGetPostById() {
+        Long postId = 1L;
+        Post post = new Post();
+        post.setId(postId);
+        post.setTitle("Test Title");
+        post.setContent("Test Content");
+        post.setAuthor("John Doe");
 
-        Post post2 = new Post();
-        post2.setId(2L);
-        post2.setTitle("Post 2");
+        when(postRepository.findById(postId)).thenReturn(Optional.of(post));
 
-        List<Post> mockPosts = Arrays.asList(post1, post2);
-
-        // Verhalten des Repositories definieren
-        when(postRepository.findAll()).thenReturn(mockPosts);
-
-        // Act: Methode aufrufen
-        List<Post> result = postService.getAllPosts();
-
-        // Assert: Ergebnisse überprüfen
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        assertEquals("Post 1", result.get(0).getTitle());
-        assertEquals("Post 2", result.get(1).getTitle());
-
-        // Verifizierung des Repository-Aufrufs
-        verify(postRepository, times(1)).findAll();
+        PostDTO postDTO = postService.getPostById(postId);
+        assertEquals("Test Title", postDTO.getTitle());
+        assertEquals("John Doe", postDTO.getAuthor());
     }
-
-    @Test
-    void testCreatePost() {
-    }
-
-    @Test
-    void testUpdatePost() {
-    }
-
-    @Test
-    void testDeletePost() {
-    }
-
 }

@@ -1,5 +1,6 @@
 package org.rene.blog.service;
 
+import org.rene.blog.dto.PostDTO;
 import org.rene.blog.model.Post;
 import org.rene.blog.model.Tag;
 import org.rene.blog.repository.PostRepository;
@@ -8,14 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-/**
- * Service class for managing blog posts.
- * This class handles the business logic for operations such as creating, retrieving, updating,
- * and deleting posts. It interacts with the data repository to perform these operations.
- */
 @Service
 public class PostService {
 
@@ -25,58 +22,76 @@ public class PostService {
     @Autowired
     private TagRepository tagRepository;
 
-
-    public PostService(PostRepository postRepository) {
-        this.postRepository = postRepository;
+    // Get all posts (returning DTOs)
+    public List<PostDTO> getAllPosts() {
+        List<Post> posts = postRepository.findAll();
+        return posts.stream().map(PostDTO::new).collect(Collectors.toList());
     }
 
-
-
-    public List<Post> getAllPosts() {
-        return postRepository.findAll();
-    }
-
-    public Optional<Post> getPostById(Long id) {
-        return postRepository.findById(id);
-    }
-
-    /**
-     * Creates a new blog post and associates it with the provided set of tags.
-     * If a tag does not already exist in the repository, it will be created and saved.
-     * The post is then saved with its associated tags in the repository.
-     *
-     * @param post the blog post to be created
-     * @param tagNames the set of tag names to associate with the blog post
-     * @return the created blog post with associated tags
-     */
-    public Post createPostWithTags(Post post, Set<String> tagNames) {
-        for (String tagName : tagNames) {
-            Tag tag = tagRepository.findByName(tagName);
-            if (tag == null) {
-                tag = new Tag(tagName);
-                tagRepository.save(tag);
-            }
-            post.getTags().add(tag);
+    // Get a single post by ID (returning Optional DTO)
+    public PostDTO getPostById(Long id) {
+        Optional<Post> postOptional = postRepository.findById(id);
+        if (postOptional.isPresent()) {
+            return new PostDTO(postOptional.get());
         }
-        return postRepository.save(post);
+        throw new RuntimeException("Post not found");
     }
 
-    public Post updatePost(Long id, Post updatedPost) {
-        return postRepository.findById(id)
-                .map(post -> {
-                    post.setTitle(updatedPost.getTitle());
-                    post.setContent(updatedPost.getContent());
-                    post.setTags(updatedPost.getTags());
-                    return postRepository.save(post);
-                })
+    // Create a new post from DTO
+    public PostDTO createPost(PostDTO postDTO) {
+        Post post = new Post();
+        post.setTitle(postDTO.getTitle());
+        post.setContent(postDTO.getContent());
+        post.setAuthor(postDTO.getAuthor());
+
+        // Save Post
+        Post savedPost = postRepository.save(post);
+        return new PostDTO(savedPost);
+    }
+
+    // Create a new post with tags
+    public PostDTO createPostWithTags(PostDTO postDTO, Set<String> tagNames) {
+        Post post = new Post();
+        post.setTitle(postDTO.getTitle());
+        post.setContent(postDTO.getContent());
+        post.setAuthor(postDTO.getAuthor());
+
+        // Convert tag names to Tag entities
+        Set<Tag> tags = tagNames.stream()
+                .map(tagName -> tagRepository.findByName(tagName)
+                        .orElseGet(() -> tagRepository.save(new Tag(tagName)))) // Create if not exists
+                .collect(Collectors.toSet());
+
+        post.setTags(tags);
+        Post savedPost = postRepository.save(post);
+        return new PostDTO(savedPost);
+    }
+
+    // Update an existing post
+    public PostDTO updatePost(Long id, PostDTO postDTO) {
+        Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        post.setTitle(postDTO.getTitle());
+        post.setContent(postDTO.getContent());
+        post.setAuthor(postDTO.getAuthor());
+
+        // Update tags
+        Set<Tag> tags = postDTO.getTags().stream()
+                .map(tagName -> tagRepository.findByName(tagName)
+                        .orElseGet(() -> tagRepository.save(new Tag(tagName))))
+                .collect(Collectors.toSet());
+
+        post.setTags(tags);
+        Post updatedPost = postRepository.save(post);
+        return new PostDTO(updatedPost);
     }
 
+    // Delete a post
     public void deletePost(Long id) {
+        if (!postRepository.existsById(id)) {
+            throw new RuntimeException("Post not found");
+        }
         postRepository.deleteById(id);
-    }
-
-    public List<Post> searchByTitle(String title) {
-        return postRepository.findByTitleContainingIgnoreCase(title);
     }
 }

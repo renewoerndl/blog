@@ -7,19 +7,20 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
 
-
 @Configuration
 public class DatabaseConfig {
 
-    @Value("${database.url}")
+    @Value("${spring.datasource.url}")
     private String url;
 
-    @Value("${database.username}")
+    @Value("${spring.datasource.username}")
     private String username;
 
-    @Value("${database.password}")
+    @Value("${spring.datasource.password}")
     private String password;
 
+    @Value("${spring.datasource.driver-class-name}")
+    private String driverClassName;
 
     @Bean
     public DataSource dataSource() {
@@ -27,7 +28,7 @@ public class DatabaseConfig {
         dataSource.setUrl(url);
         dataSource.setUsername(username);
         dataSource.setPassword(password);
-        dataSource.setDriverClassName("com.postgresql.Driver");
+        dataSource.setDriverClassName(driverClassName);
         return dataSource;
     }
 }
